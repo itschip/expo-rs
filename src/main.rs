@@ -9,7 +9,7 @@ async fn main() {
     });
 
     client.send_push_notification(Notification {
-        to: "ExponentPushToken[jgjpK8NQcb4475rh2nn4K9]".to_string(),
+        to: "".to_string(),
         title: Some("Hello world".to_string()),
         body: Some("This is a notification from Rust".to_string()),
     }).await;
