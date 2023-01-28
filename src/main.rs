@@ -12,7 +12,25 @@ async fn main() {
         to: vec!["".to_string()],
         title: Some("Hello world".to_string()),
         body: Some("This is a notification from Rust".to_string()),
+        data: None,
+        sound: None,
+        badge: None,
+        channel_id: None,
+        category_id: None,
+        priority: None,
+        subtitle: None,
+        ttl: None,
+        expiration: None,
     }).await;
 
-    println!("Response: {:?}", res);
+     match res {
+         Ok(res) => {
+            println!("Response: {:?}", res.data[0]);
+         },
+         Err(err) => {
+             println!("{err}")
+         }
+     }
+
+
 }
