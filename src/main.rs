@@ -8,9 +8,11 @@ async fn main() {
         access_token: None,
     });
 
-    client.send_push_notification(Notification {
-        to: "".to_string(),
+     let res = client.send_push_notification(Notification {
+        to: vec!["".to_string()],
         title: Some("Hello world".to_string()),
         body: Some("This is a notification from Rust".to_string()),
     }).await;
+
+    println!("Response: {:?}", res);
 }

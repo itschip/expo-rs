@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::any::Any;
 
 pub struct ExpoClient {
     host: String,
@@ -16,7 +15,7 @@ pub struct ExpoConfig {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Notification {
-    pub to: String,
+    pub to: Vec<String>,
     pub title: Option<String>,
     pub body: Option<String>,
 }
@@ -36,7 +35,7 @@ pub struct TicketDetails {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PushTicketResponse {
-    data: PushTicket,
+    data: Vec<PushTicket>,
 }
 
 impl ExpoClient {
@@ -50,23 +49,12 @@ impl ExpoClient {
         }
     }
 
-    pub async fn send_push_notification(&self, notification: Notification) {
+    pub async fn send_push_notification(&self, notification: Notification) -> Result<PushTicketResponse, reqwest::Error> {
         let url = format!("{}{}", self.host, self.push_path);
 
-        let res = self.http_client.post(&url).json(&notification).send().await;
+        let res = self.http_client.post(&url).json(&notification).send().await.unwrap();
+        let data = res.json::<PushTicketResponse>().await.unwrap();
 
-        let response = match res {
-            Ok(res) => {
-                let data = res.json::<PushTicketResponse>().await.unwrap();
-
-                data.data.id
-            }
-            Err(err) => {
-                println!("Error: {}", err);
-                panic!()
-            }
-        };
-
-        println!("Response: {:?}", response);
+        Ok(data)
     }
 }
