@@ -8,20 +8,11 @@ async fn main() {
         access_token: None,
     });
 
-     let res = client.send_push_notification(Notification {
-        to: vec!["".to_string()],
-        title: Some("Hello world".to_string()),
-        body: Some("This is a notification from Rust".to_string()),
-        data: None,
-        sound: None,
-        badge: None,
-        channel_id: None,
-        category_id: None,
-        priority: None,
-        subtitle: None,
-        ttl: None,
-        expiration: None,
-    }).await;
+    let notification = Notification::new(vec!["ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]".to_string()])
+        .with_title("Hello World".to_string())
+        .with_body("This is a test notification".to_string());
+
+     let res = client.send_push_notification(notification).await;
 
      match res {
          Ok(res) => {
@@ -31,6 +22,4 @@ async fn main() {
              println!("{err}")
          }
      }
-
-
 }
