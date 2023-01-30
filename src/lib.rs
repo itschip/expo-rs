@@ -1,4 +1,5 @@
-use serde::{Deserialize, Serialize};
+use reqwest::header::{HeaderMap, HOST, ACCEPT, ACCEPT_ENCODING, CONTENT_TYPE};
+use serde::{Deserialize, Serialize, de::Error};
 
 pub struct ExpoClient {
     host: String,
@@ -91,20 +92,27 @@ impl ExpoClient {
         }
     }
 
-    pub async fn send_push_notification(&self, notification: Notification) -> Result<PushTicketResponse, String> {
+    pub async fn send_push_notification(&self, notification: Notification) -> Result<PushTicketResponse, reqwest::Error> {
         let url = format!("{}{}", self.host, self.push_path);
+        
+        let mut headers = HeaderMap::new();
 
-        let res = self.http_client.post(&url).json(&notification).send().await; 
+        headers.insert(HOST, "exp.host".parse().unwrap());
+        headers.insert(ACCEPT, "application/json".parse().unwrap());
+        headers.insert(ACCEPT_ENCODING, "gzip, deflate".parse().unwrap());
+        headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
+
+        let res = self.http_client.post(&url).headers(headers).json(&notification).send().await; 
 
         match res {
             Ok(res) => {
                 let res = res.json::<PushTicketResponse>().await;
                 match res {
                     Ok(res) => Ok(res),
-                    Err(_) => Err("Failed to marshal response".to_string()),
+                    Err(err) => Err(err),
                 }
             },
-            Err(_) => Err("Failed to parse response".to_string()),
+            Err(err) => Err(err),
         }
     }
 }
