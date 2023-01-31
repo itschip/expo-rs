@@ -8,11 +8,10 @@ async fn main() {
         access_token: None,
     });
 
-    let notification = Notification::new(vec!["ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]".to_string()])
-        .with_title("Hello World".to_string())
-        .with_body("This is a test notification".to_string());
+    let mut notification = Notification::new(vec!["".to_string()]);
+    let expo_notification = notification.with_title("Hello".to_string()).with_body("World".to_string());
 
-     let res = client.send_push_notification(notification).await;
+    let res = client.send_push_notification(expo_notification).await;
 
      match res {
          Ok(res) => {

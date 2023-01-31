@@ -71,61 +71,61 @@ impl Notification {
         }
     }
 
-    pub fn with_data(mut self, data: String) -> Self {
+    pub fn with_data(&mut self, data: String) -> &mut Self {
         self.data = Some(data);
         self
     }
 
-    pub fn with_title(mut self, title: String) -> Self {
+    pub fn with_title(&mut self, title: String) -> &mut Self {
         self.title = Some(title);
         self
     }
 
-    pub fn with_body(mut self, body: String) -> Self {
+    pub fn with_body(&mut self, body: String) -> &mut Self {
         self.body = Some(body);
         self
     }
 
-    pub fn with_ttl(mut self, ttl: u32) -> Self {
+    pub fn with_ttl(&mut self, ttl: u32) -> &mut Self {
         self.ttl = Some(ttl);
         self
     }
 
-    pub fn with_expiration(mut self, expiration: u32) -> Self {
+    pub fn with_expiration(&mut self, expiration: u32) -> &mut Self {
         self.expiration = Some(expiration);
         self
     }
 
-    pub fn with_priority(mut self, priority: String) -> Self {
+    pub fn with_priority(&mut self, priority: String) -> &mut Self {
         self.priority = Some(priority);
         self
     }
 
-    pub fn with_subtitle(mut self, subtitle: String) -> Self {
+    pub fn with_subtitle(&mut self, subtitle: String) -> &mut Self {
         self.subtitle = Some(subtitle);
         self
     }
 
-    pub fn with_sound(mut self, sound: String) -> Self {
+    pub fn with_sound(&mut self, sound: String) -> &mut Self {
         self.sound = Some(sound);
         self
     }
 
-    pub fn with_badge(mut self, badge: u32) -> Self {
+
+    pub fn with_badge(&mut self, badge: u32) -> &mut Self {
         self.badge = Some(badge);
         self
     }
 
-    pub fn with_channel_id(mut self, channel_id: String) -> Self {
+    pub fn with_channel_id(&mut self, channel_id: String) -> &mut Self {
         self.channel_id = Some(channel_id);
         self
     }
 
-    pub fn with_category_id(mut self, category_id: String) -> Self {
+    pub fn with_category_id(&mut self, category_id: String) -> &mut Self {
         self.category_id = Some(category_id);
         self
     }
-
 }
 
 
@@ -139,7 +139,7 @@ pub struct PushTicket {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TicketDetails {
     error: String,
-    expo_push_token: String,
+    expo_push_token: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -168,7 +168,7 @@ impl ExpoClient {
         }
     }
 
-    pub async fn send_push_notification(&self, notification: Notification) -> Result<PushTicketResponse, reqwest::Error> {
+    pub async fn send_push_notification(&self, notification: &mut Notification) -> Result<PushTicketResponse, reqwest::Error> {
         let url = format!("{}{}", self.host, self.push_path);
         
         let mut headers = HeaderMap::new();
