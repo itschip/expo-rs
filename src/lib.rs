@@ -71,18 +71,18 @@ impl Notification {
         }
     }
 
-    pub fn with_data(&mut self, data: String) -> &mut Self {
-        self.data = Some(data);
+    pub fn with_data(&mut self, data: impl Into<String>) -> &mut Self {
+        self.data = Some(data.into());
         self
     }
 
-    pub fn with_title(&mut self, title: String) -> &mut Self {
-        self.title = Some(title);
+    pub fn with_title(&mut self, title: impl Into<String>) -> &mut Self {
+        self.title = Some(title.into());
         self
     }
 
-    pub fn with_body(&mut self, body: String) -> &mut Self {
-        self.body = Some(body);
+    pub fn with_body(&mut self, body: impl Into<String>) -> &mut Self {
+        self.body = Some(body.into());
         self
     }
 
@@ -131,15 +131,15 @@ impl Notification {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PushTicket {
-    status: String,
-    id: String,
-    details: Option<TicketDetails>,
+    pub status: String,
+    pub id: String,
+    pub details: Option<TicketDetails>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TicketDetails {
-    error: String,
-    expo_push_token: Option<String>,
+    pub error: String,
+    pub expo_push_token: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

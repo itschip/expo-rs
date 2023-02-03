@@ -9,7 +9,10 @@ async fn main() {
     });
 
     let mut notification = Notification::new(vec!["".to_string()]);
-    let expo_notification = notification.with_title("Hello".to_string()).with_body("World".to_string());
+    let expo_notification = notification
+        .with_title("Hello".to_string())
+        .with_body("World")
+        .with_sound("default".to_string());
 
     let res = client.send_push_notification(expo_notification).await;
 
