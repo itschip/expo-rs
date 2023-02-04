@@ -143,8 +143,16 @@ pub struct TicketDetails {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct ServerTicketError {
+    pub code: String,
+    pub message: String,
+    pub is_transient: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct PushTicketResponse {
     pub data: Vec<PushTicket>,
+    pub errors: Vec<ServerTicketError>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -168,7 +176,7 @@ impl ExpoClient {
         }
     }
 
-    pub async fn send_push_notification(&self, notification: &mut Notification) -> Result<PushTicketResponse, reqwest::Error> {
+    pub async fn send_push_notification(&self, notification: &mut Notification) -> Result<Vec<PushTicket>, reqwest::Error> {
         let url = format!("{}{}", self.host, self.push_path);
         
         let mut headers = HeaderMap::new();
@@ -180,7 +188,7 @@ impl ExpoClient {
 
         let res = self.http_client.post(&url).headers(headers).json(&notification).send().await; 
 
-        match res {
+        let result = match res {
             Ok(res) => {
                 let res = res.json::<PushTicketResponse>().await;
                 match res {
@@ -189,6 +197,16 @@ impl ExpoClient {
                 }
             },
             Err(err) => Err(err),
+        };
+
+        match result {
+            Ok(res) => {
+                Ok(res.data)
+            },
+            // TODO: Handle ticket errors and missing data
+            Err(err) => {
+                Err(err)
+            }
         }
     }
 }
