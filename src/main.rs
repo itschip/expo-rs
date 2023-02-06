@@ -10,15 +10,15 @@ async fn main() {
 
     let mut notification = Notification::new(vec!["".to_string()]);
     let expo_notification = notification
-        .with_title("Hello".to_string())
-        .with_body("World")
+        .with_title("Hello chip".to_string())
+        .with_body("What's up?".to_string())
         .with_sound("default".to_string());
 
     let res = client.send_push_notification(expo_notification).await;
 
      match res {
          Ok(res) => {
-            println!("Response: {:?}", res.data[0]);
+            println!("Last response: {:?}", res[0]);
          },
          Err(err) => {
              println!("{err}")

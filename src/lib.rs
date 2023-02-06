@@ -132,6 +132,7 @@ impl Notification {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PushTicket {
     pub status: String,
+    #[serde(default)]
     pub id: String,
     pub details: Option<TicketDetails>,
 }
@@ -152,6 +153,7 @@ pub struct ServerTicketError {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PushTicketResponse {
     pub data: Vec<PushTicket>,
+    #[serde(default)]
     pub errors: Vec<ServerTicketError>,
 }
 
@@ -176,7 +178,7 @@ impl ExpoClient {
         }
     }
 
-    pub async fn send_push_notification(&self, notification: &mut Notification) -> Result<Vec<PushTicket>, reqwest::Error> {
+    pub async fn send_push_notification(&self, notification: &mut Notification) -> Result<Vec<PushTicket>, String> {
         let url = format!("{}{}", self.host, self.push_path);
         
         let mut headers = HeaderMap::new();
@@ -188,25 +190,23 @@ impl ExpoClient {
 
         let res = self.http_client.post(&url).headers(headers).json(&notification).send().await; 
 
-        let result = match res {
+
+        match res {
             Ok(res) => {
                 let res = res.json::<PushTicketResponse>().await;
                 match res {
-                    Ok(res) => Ok(res),
-                    Err(err) => Err(err),
+                    Ok(res) => {
+                        println!("res: {:?}", res);
+                        if res.errors.len() > 0 {
+                            Err("Error sending notification: {res.errors[0]}".to_string())
+                        } else {
+                            Ok(res.data)
+                        }
+                    },
+                    Err(err) => Err(err.to_string()),
                 }
             },
-            Err(err) => Err(err),
-        };
-
-        match result {
-            Ok(res) => {
-                Ok(res.data)
-            },
-            // TODO: Handle ticket errors and missing data
-            Err(err) => {
-                Err(err)
-            }
+            Err(err) => Err(err.to_string()),
         }
     }
 }
